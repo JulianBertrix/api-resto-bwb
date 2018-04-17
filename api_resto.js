@@ -53,7 +53,7 @@ var listeDeCarte = [
         },
         {
             id: 2,
-            titre: "SVT",
+            titre: "uhu",
             entres: {nom: "salade", prix: 3},
             plat: {nom: "viande", prix: 10},
             dessert: {nom: "tarte", prix: 5}
@@ -61,29 +61,38 @@ var listeDeCarte = [
         ] 
     }
 ];
-
+/*
+var menus = [];
+for(var i = 0; i < listeDeCarte.length; i++){
+    menus[i] = listeDeCarte[i].listeDeMenu;
+}
+*/
 app.use( bodyParser.json() );
 app.use(bodyParser.urlencoded({extended: true}));
 
 //retourne toutes les cartes
 app.get("/cartes/get", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     res.setHeader('Content-Type', 'index/json');
     res.status(200).json(listeDeCarte);
 });
 
 //retourne tous les menus de toutes les cartes
 app.get("/cartes/menus/get", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
+    
+    var menus = [];
     for(var i = 0; i < listeDeCarte.length; i++){
-        res.setHeader('Content-Type', 'index/json');
-        res.status(200).json(listeDeCarte[i].listeDeMenu);
+        menus[i] = listeDeCarte[i].listeDeMenu;
+        
     }
+    res.setHeader('Content-Type', 'index/json');
+    res.status(200).json(menus);  
 });
 
 //retourne une carte par son id
 app.get("/cartes/:id/get", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
    
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -97,7 +106,7 @@ app.get("/cartes/:id/get", function(req, res){
 
 //retourne le menu sélectionné
 app.get("/cartes/menus/:id/get", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idMenu = parseInt(req.params.id);
     
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -114,7 +123,7 @@ app.get("/cartes/menus/:id/get", function(req, res){
 
 //retourne tous les menus de la carte sélectionnée
 app.get("/cartes/:id/menus/get", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
     
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -128,7 +137,7 @@ app.get("/cartes/:id/menus/get", function(req, res){
 
 //ajoute une nouvelle carte et retourne son id
 app.post("/cartes/add", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let newCard = req.body;
    
     newCard['id'] = generateCardID();
@@ -138,7 +147,7 @@ app.post("/cartes/add", function(req, res){
 
 //ajoute un menu a la carte sélectionnée retourne l’id du menu créé
 app.post("/cartes/:id/menus/add", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
     let newMenu = req.body;
     let carte;
@@ -156,7 +165,7 @@ app.post("/cartes/:id/menus/add", function(req, res){
 
 //supprime la carte sélectionnée et tous les menus correspondants
 app.delete("/cartes/:id/remove", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
     
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -171,7 +180,7 @@ app.delete("/cartes/:id/remove", function(req, res){
 
 //supprime tous les menus de la carte sélectionnée
 app.delete("/cartes/:id/menus/remove", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
     
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -189,7 +198,7 @@ app.delete("/cartes/:id/menus/remove", function(req, res){
 
 //supprime le menu sélectionné
 app.delete("/cartes/menus/:id/remove", function(req, res){
-    res.header("Acces-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", "*");
     let idMenu = parseInt(req.params.id);
     
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -239,5 +248,5 @@ function generateMenuID(){
     return newMenuID + 1;
 }
 
-app.listen(3000, "localhost");
+app.listen(3000, "192.168.1.50");
 console.log("à l'écoute");
