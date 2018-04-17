@@ -1,24 +1,7 @@
 const express = require('express')
 const app = express()
 var bodyParser = require('body-parser')
-/*
-var listeDeMenu = [
-    {
-        id: 1,
-        titre: "Menu du jour",
-        entrés: {nom: "du jour", prix: 5},
-        plat: {nom: "du jour", prix: 8},
-        dessert: {nom: "du jour", prix: 3}
-    },
-    {
-        id: 2,
-        titre: "SVT",
-        entrés: {nom: "salade", prix: 3},
-        plat: {nom: "viande", prix: 10},
-        dessert: {nom: "tarte", prix: 5}
-    }
-];
-*/
+
 var listeDeCarte = [
     {
         id: 1,
@@ -61,12 +44,7 @@ var listeDeCarte = [
         ] 
     }
 ];
-/*
-var menus = [];
-for(var i = 0; i < listeDeCarte.length; i++){
-    menus[i] = listeDeCarte[i].listeDeMenu;
-}
-*/
+
 app.use( bodyParser.json() );
 app.use(bodyParser.urlencoded({extended: true}));
 
@@ -164,7 +142,7 @@ app.post("/cartes/:id/menus/add", function(req, res){
 });
 
 //supprime la carte sélectionnée et tous les menus correspondants
-app.delete("/cartes/:id/remove", function(req, res){
+app.post("/cartes/:id/remove", function(req, res){
     res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
     
@@ -179,7 +157,7 @@ app.delete("/cartes/:id/remove", function(req, res){
 });
 
 //supprime tous les menus de la carte sélectionnée
-app.delete("/cartes/:id/menus/remove", function(req, res){
+app.post("/cartes/:id/menus/remove", function(req, res){
     res.header("Access-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
     
@@ -197,7 +175,7 @@ app.delete("/cartes/:id/menus/remove", function(req, res){
 });
 
 //supprime le menu sélectionné
-app.delete("/cartes/menus/:id/remove", function(req, res){
+app.post("/cartes/menus/:id/remove", function(req, res){
     res.header("Access-Control-Allow-Origin", "*");
     let idMenu = parseInt(req.params.id);
     
@@ -215,7 +193,26 @@ app.delete("/cartes/menus/:id/remove", function(req, res){
 });
 
 //met à jour le menu sélectionné
-//TODO
+app.post("/cartes/menus/:id/update", function(req, res){
+    res.header("Access-Control-Allow-Origin", "*");
+    let idMenu = parseInt(req.params.id);
+    let reqBody = req.body;
+    for(var i = 0; i < listeDeCarte.length; i++){
+        let menu = listeDeCarte[i].listeDeMenu;
+        for(var j = 0; j < menu.length; j++){       
+            if(idMenu === menu[j].id){
+                res.setHeader('Content-Type', 'index/json');
+                menu[j].titre = reqBody.titre;
+                menu[j].entres = reqBody.entres;
+                menu[j].plat = reqBody.plat;
+                menu[j].dessert = reqBody.dessert;
+                console.log(menu[j]);
+                res.status(200).send("majOK");
+            }   
+        }
+    }   
+    res.status(404).send("oups");
+});
 
 
 //applique un id à une nouvelle carte 
