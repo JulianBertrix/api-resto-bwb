@@ -1,7 +1,7 @@
 const express = require('express')
 const app = express()
 var bodyParser = require('body-parser')
-
+/*
 var listeDeMenu = [
     {
         id: 1,
@@ -18,17 +18,47 @@ var listeDeMenu = [
         dessert: {nom: "tarte", prix: 5}
     }
 ];
-
+*/
 var listeDeCarte = [
     {
         id: 1,
         titre: "carte1",
-        listeDeMenu: listeDeMenu  
+        listeDeMenu: [
+        {
+            id: 1,
+            titre: "Menu du jour",
+            entrés: {nom: "du jour", prix: 5},
+            plat: {nom: "du jour", prix: 8},
+            dessert: {nom: "du jour", prix: 3}
+        },
+        {
+            id: 2,
+            titre: "SVT",
+            entrés: {nom: "salade", prix: 3},
+            plat: {nom: "viande", prix: 10},
+            dessert: {nom: "tarte", prix: 5}
+        } 
+        ] 
     },
     {
         id: 2,
         titre: "carte2",
-        listeDeMenu: listeDeMenu
+        listeDeMenu: [
+        {
+            id: 1,
+            titre: "Menu du jour",
+            entrés: {nom: "du jour", prix: 5},
+            plat: {nom: "du jour", prix: 8},
+            dessert: {nom: "du jour", prix: 3}
+        },
+        {
+            id: 2,
+            titre: "SVT",
+            entrés: {nom: "salade", prix: 3},
+            plat: {nom: "viande", prix: 10},
+            dessert: {nom: "tarte", prix: 5}
+        } 
+        ] 
     }
 ];
 
@@ -45,8 +75,10 @@ app.get("/cartes/get", function(req, res){
 //retourne tous les menus de toutes les cartes
 app.get("/cartes/menus/get", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
-    res.setHeader('Content-Type', 'index/json');
-    res.status(200).json(listeDeMenu);
+    for(var i = 0; i < listeDeCarte.length; i++){
+        res.setHeader('Content-Type', 'index/json');
+        res.status(200).json(listeDeCarte[i].listeDeMenu);
+    }
 });
 
 //retourne une carte par son id
@@ -104,20 +136,44 @@ app.post("/cartes/add", function(req, res){
 //ajoute un menu a la carte sélectionnée retourne l’id du menu créé
 app.post("/cartes/:id/menus/add", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
+    let idCarte = parseInt(req.params.id);
     let newMenu = req.body;
     let carte;
+    let menu;
     for(var i = 0; i < listeDeCarte.length; i++){
         carte = listeDeCarte[i];
-    }
-    
-    newMenu['id'] = generateCardID();
-    carte.listeDeMenu.push(newMenu);
-    res.status(200).json(newMenu);
+        if(idCarte === carte.id){
+            menu = carte.listeDeMenu;
+            newMenu['id'] = generateCardID();
+            menu.push(newMenu);
+            res.status(200).json(newMenu);  
+        }
+    }   
 });
 
 //supprime la carte sélectionnée et tous les menus correspondants
 app.delete("/cartes/:id/remove", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
+    let idCarte = parseInt(req.params.id);
+    let carte;
+    
+    for(var i = 0; i < listeDeCarte.length; i++){
+        carte = listeDeCarte[i];
+        if(idCarte === carte.id){
+            //res.setHeader('Content-Type', 'index/json');
+            
+            
+            for(var j = 0; j < listeDeMenu.length; j++){
+                //carte.listeDeMenu.splice(j, listeDeMenu.length)
+                console.log(carte.listeDeMenu)
+                res.status(200).json(carte.listeDeMenu);
+            }
+            //listeDeCarte.splice(i, 1);  
+            res.status(200).json(carte);
+           // break;      
+        }
+    }   
+    res.status(404).send("oups");
 });
 
 //supprime tous les menus de la carte sélectionnée
@@ -134,27 +190,30 @@ app.delete("/cartes/menus/:id/remove", function(req, res){
 //TODO
 
 
-
-
-
+//applique un id à une nouvelle carte 
 function generateCardID(){
     let newCardID = 0;
     
+    //verifie l'id max de la liste de carte
     for(var i = 0; i < listeDeCarte.length; i++){
         if(listeDeCarte[i].id > newCardID){
             newCardID = listeDeCarte[i].id;
         }
     }
-    
+    //l'id de la nouvelle carte sera l'id max de la liste de carte plus 1
     return newCardID + 1;
 }
 
+//idem que pour la carte pour un menu
 function generateMenuID(){
     let newMenuID = 0;
-    
-    for(var i = 0; i < listeDeMenu.length; i++){
-        if(listeDeMenu[i].id > newMenuID){
-            newMenuID = listeDeMenu[i].id;
+    let carte;
+    let menu;
+    for(var i = 0; i < listeDeCarte.length; i++){
+        carte = listeDeCarte[i];
+        menu = carte.listeDeMenu;
+        if(menu.id > newMenuID){
+            newMenuID = menu.id;
         }
     }
     
