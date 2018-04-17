@@ -23,12 +23,12 @@ var listeDeCarte = [
     {
         id: 1,
         titre: "carte1",
-        listeDeMenu: [listeDeMenu]  
+        listeDeMenu: listeDeMenu  
     },
     {
         id: 2,
         titre: "carte2",
-        listeDeMenu: [listeDeMenu]
+        listeDeMenu: listeDeMenu
     }
 ];
 
@@ -37,21 +37,21 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 //retourne toutes les cartes
 app.get("/cartes/get", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
     res.setHeader('Content-Type', 'index/json');
     res.status(200).json(listeDeCarte);
 });
 
 //retourne tous les menus de toutes les cartes
 app.get("/cartes/menus/get", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
     res.setHeader('Content-Type', 'index/json');
     res.status(200).json(listeDeMenu);
 });
 
 //retourne une carte par son id
 app.get("/cartes/:id/get", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
    
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -65,7 +65,7 @@ app.get("/cartes/:id/get", function(req, res){
 
 //retourne le menu sélectionné
 app.get("/cartes/menus/:id/get", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
     let idMenu = parseInt(req.params.id);
    
     for(var i = 0; i < listeDeMenu.length; i++){
@@ -79,17 +79,13 @@ app.get("/cartes/menus/:id/get", function(req, res){
 
 //retourne tous les menus de la carte sélectionnée
 app.get("/cartes/:id/menus/get", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
-    let menu;
     
     for(var i = 0; i < listeDeCarte.length; i++){
         if(idCarte === listeDeCarte[i].id){
-            for(var j = 0; j < listeDeMenu.length; j++){
-                menu = listeDeMenu[j];
-                res.setHeader('Content-Type', 'index/json');
-                res.status(200).json(menu);
-            }
+            res.setHeader('Content-Type', 'index/json');
+            res.status(200).json(listeDeCarte[i].listeDeMenu);
         }        
     }   
     res.status(404).send("oups");
@@ -97,27 +93,41 @@ app.get("/cartes/:id/menus/get", function(req, res){
 
 //ajoute une nouvelle carte et retourne son id
 app.post("/cartes/add", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
+    let newCard = req.body;
+   
+    newCard['id'] = generateCardID();
+    listeDeCarte.push(newCard);
+    res.status(200).json(newCard);
 });
 
 //ajoute un menu a la carte sélectionnée retourne l’id du menu créé
 app.post("/cartes/:id/menus/add", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
+    let newMenu = req.body;
+    let carte;
+    for(var i = 0; i < listeDeCarte.length; i++){
+        carte = listeDeCarte[i];
+    }
+    
+    newMenu['id'] = generateCardID();
+    carte.listeDeMenu.push(newMenu);
+    res.status(200).json(newMenu);
 });
 
 //supprime la carte sélectionnée et tous les menus correspondants
 app.delete("/cartes/:id/remove", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
 });
 
 //supprime tous les menus de la carte sélectionnée
 app.delete("/cartes/:id/menus/remove", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
 });
 
 //supprime le menu sélectionné
 app.delete("/cartes/menus/:id/remove", function(req, res){
-    res.header("Acces-Control-Allow-Origine", "*");
+    res.header("Acces-Control-Allow-Origin", "*");
 });
 
 //met à jour le menu sélectionné
@@ -127,7 +137,7 @@ app.delete("/cartes/menus/:id/remove", function(req, res){
 
 
 
-function generatedCardID(){
+function generateCardID(){
     let newCardID = 0;
     
     for(var i = 0; i < listeDeCarte.length; i++){
@@ -135,8 +145,21 @@ function generatedCardID(){
             newCardID = listeDeCarte[i].id;
         }
     }
+    
+    return newCardID + 1;
 }
 
+function generateMenuID(){
+    let newMenuID = 0;
+    
+    for(var i = 0; i < listeDeMenu.length; i++){
+        if(listeDeMenu[i].id > newMenuID){
+            newMenuID = listeDeMenu[i].id;
+        }
+    }
+    
+    return newMenuID + 1;
+}
 
 app.listen(3000, "localhost");
 console.log("à l'écoute");
