@@ -27,14 +27,14 @@ var listeDeCarte = [
         {
             id: 1,
             titre: "Menu du jour",
-            entrés: {nom: "du jour", prix: 5},
+            entres: {nom: "du jour", prix: 5},
             plat: {nom: "du jour", prix: 8},
             dessert: {nom: "du jour", prix: 3}
         },
         {
             id: 2,
             titre: "SVT",
-            entrés: {nom: "salade", prix: 3},
+            entres: {nom: "salade", prix: 3},
             plat: {nom: "viande", prix: 10},
             dessert: {nom: "tarte", prix: 5}
         } 
@@ -47,14 +47,14 @@ var listeDeCarte = [
         {
             id: 1,
             titre: "Menu du jour",
-            entrés: {nom: "du jour", prix: 5},
+            entres: {nom: "du jour", prix: 5},
             plat: {nom: "du jour", prix: 8},
             dessert: {nom: "du jour", prix: 3}
         },
         {
             id: 2,
             titre: "SVT",
-            entrés: {nom: "salade", prix: 3},
+            entres: {nom: "salade", prix: 3},
             plat: {nom: "viande", prix: 10},
             dessert: {nom: "tarte", prix: 5}
         } 
@@ -99,11 +99,14 @@ app.get("/cartes/:id/get", function(req, res){
 app.get("/cartes/menus/:id/get", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
     let idMenu = parseInt(req.params.id);
-   
-    for(var i = 0; i < listeDeMenu.length; i++){
-        if(idMenu === listeDeMenu[i].id){
-            res.setHeader('Content-Type', 'index/json');
-            res.status(200).json(listeDeMenu[i]);
+    
+    for(var i = 0; i < listeDeCarte.length; i++){
+        let menu = listeDeCarte[i].listeDeMenu;
+        for(var j = 0; j < menu.length; j++){       
+            if(idMenu === menu[j].id){
+                res.setHeader('Content-Type', 'index/json');
+                res.status(200).json(menu[j]);
+            }   
         }
     }   
     res.status(404).send("oups");
@@ -155,22 +158,12 @@ app.post("/cartes/:id/menus/add", function(req, res){
 app.delete("/cartes/:id/remove", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
     let idCarte = parseInt(req.params.id);
-    let carte;
     
     for(var i = 0; i < listeDeCarte.length; i++){
-        carte = listeDeCarte[i];
-        if(idCarte === carte.id){
-            //res.setHeader('Content-Type', 'index/json');
-            
-            
-            for(var j = 0; j < listeDeMenu.length; j++){
-                //carte.listeDeMenu.splice(j, listeDeMenu.length)
-                console.log(carte.listeDeMenu)
-                res.status(200).json(carte.listeDeMenu);
-            }
-            //listeDeCarte.splice(i, 1);  
-            res.status(200).json(carte);
-           // break;      
+        if(idCarte === listeDeCarte[i].id){
+            res.setHeader('Content-Type', 'index/json');
+            listeDeCarte.splice(i, 1);
+            res.status(200).json(listeDeCarte); 
         }
     }   
     res.status(404).send("oups");
@@ -179,11 +172,37 @@ app.delete("/cartes/:id/remove", function(req, res){
 //supprime tous les menus de la carte sélectionnée
 app.delete("/cartes/:id/menus/remove", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
+    let idCarte = parseInt(req.params.id);
+    
+    for(var i = 0; i < listeDeCarte.length; i++){
+        let menu = listeDeCarte[i].listeDeMenu;
+        if(idCarte === listeDeCarte[i].id){
+            for(var j = 0; j < menu.length; j++){
+                res.setHeader('Content-Type', 'index/json');
+                menu.splice(j, menu.length);
+                res.status(200).json(listeDeCarte); 
+            }
+        }
+    }   
+    res.status(404).send("oups");
 });
 
 //supprime le menu sélectionné
 app.delete("/cartes/menus/:id/remove", function(req, res){
     res.header("Acces-Control-Allow-Origin", "*");
+    let idMenu = parseInt(req.params.id);
+    
+    for(var i = 0; i < listeDeCarte.length; i++){
+        let menu = listeDeCarte[i].listeDeMenu;
+        for(var j = 0; j < menu.length; j++){       
+            if(idMenu === menu[j].id){
+                res.setHeader('Content-Type', 'index/json');
+                menu.splice(j, 1);
+                res.status(200).json(menu[j]);
+            }   
+        }
+    }   
+    res.status(404).send("oups");
 });
 
 //met à jour le menu sélectionné
